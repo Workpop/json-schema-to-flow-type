@@ -15,7 +15,8 @@
     "lint": "eslint .",
     "test": "npm run lint && ava -v",
     "build": "rm -rf lib && babel src --ignore __**__ -d lib",
-    "prepublish": "flow-typed update && npm test && npm run build"
+    "prepublish": "flow-typed update && npm test && npm run build",
+    "release": "standard-version"
   },
   "devDependencies": {
     "@workpop/eslint-config-workpop": "^0.0.8",

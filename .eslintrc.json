@@ -1,0 +1,7 @@
+
+{
+  "parser": "babel-eslint",
+  "extends": [
+    "@workpop/eslint-config-workpop"
+    ]
+    }

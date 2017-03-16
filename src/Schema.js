@@ -45,9 +45,9 @@ const resolveRef = (imports: Imports = {}) =>
           throw new Error(`missing import ${importRef}`);
         }
 
-        return _.cloneDeepWith(_.get(imports[importRef], keyPathArr), resolveRef({
+        return _.cloneDeepWith(_.get(imports[importRef], keyPathArr), resolveRef(_.extend({
           '#': imports[importRef],
-        }));
+        }, imports || {})));
       }
     }
     return undefined;

@@ -1,6 +1,6 @@
 {
   "name": "@workpop/json-schema-to-flow-type",
-  "version": "0.2.3",
+  "version": "0.0.1",
   "ava": {
     "files": [
       "**/__tests__/*.spec.js"
@@ -39,10 +39,10 @@
   "files": [
     "lib/**"
   ],
-  "license": "WTFPL",
+  "license": "MIT",
   "repository": {
-    "url": "git@github.com:morlay/json-schema-to-flow-type.git",
+    "url": "git@github.com:Workpop/json-schema-to-flow-type.git",
     "type": "git"
   },
-  "author": "Morlay <morlay@qq.com>"
+  "author": "Workpop"
 }

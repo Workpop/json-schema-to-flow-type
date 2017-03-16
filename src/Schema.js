@@ -6,10 +6,10 @@ import type {
   Schema,
 } from '../definitions/Schema';
 
-type Imports = { [key: string]: Schema };
+type ImportsType = { [key: string]: Schema };
 
-const resolveRef = (imports: Imports = {}) =>
-  (value: any): any => {
+const resolveRef = (imports: ImportsType = {}): Function =>  {
+  return (value: any): any => {
     if (!_.isArray(value) && _.isObject(value)) {
       const ref = _.get(value, '$ref');
 
@@ -52,11 +52,18 @@ const resolveRef = (imports: Imports = {}) =>
     }
     return undefined;
   };
+};
 
 
 export const simplifySchema = (
-  schema: Schema, imports: ?Imports,
-): Schema => _.cloneDeepWith(schema, resolveRef({
-  ...(imports || {}),
-  '~': schema,
-}));
+  schema: Schema, imports: ?ImportsType,
+): Schema => {
+  return _.cloneDeepWith(schema, resolveRef({
+    ...(imports || {}),
+    '~': schema,
+  }));
+};
+
+export default {
+  simplifySchema,
+};

@@ -1,5 +1,5 @@
 {
-  "name": "json-schema-to-flow-type",
+  "name": "@workpop/json-schema-to-flow-type",
   "version": "0.2.3",
   "ava": {
     "files": [
@@ -17,8 +17,7 @@
     "prepublish": "flow-typed update && npm test && npm run build"
   },
   "devDependencies": {
-    "@morlay/babel-preset": "3.0.x",
-    "@morlay/eslint-config": "3.0.x",
+    "@workpop/eslint-config-workpop": "^0.0.8",
     "ava": "0.17.x",
     "babel-cli": "6.18.x",
     "babel-core": "6.18.x",

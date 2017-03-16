@@ -2,31 +2,33 @@
 
 import _ from 'lodash';
 
-import type {
-  Schema,
-  SimpleTypes,
-} from '../definitions/Schema';
+import type { Schema, SimpleTypes } from '../definitions/Schema';
 
 type FlowType = 'Object' | 'Array' | 'string' | 'number' | 'boolean' | 'null' | 'any' | 'void';
 
-const hasProps = (schema: Schema, props: Array<string>): boolean =>
-  _.reduce(props, (result: boolean, prop: string) => result || _.has(schema, prop), false);
+const hasProps = (schema: Schema, props: Array<string>): boolean => {
+  return _.reduce(
+    props,
+    (result: boolean, prop: string): boolean => {
+      return result || _.has(schema, prop);
+    },
+    false,
+  );
+};
 
-const isObject = (schema: Schema): boolean => hasProps(schema, [
-  'properties',
-  'additionalProperties',
-  'patternProperties',
-  'maxProperties',
-  'minProperties',
-]);
+const isObject = (schema: Schema): boolean => {
+  return hasProps(schema, [
+    'properties',
+    'additionalProperties',
+    'patternProperties',
+    'maxProperties',
+    'minProperties',
+  ]);
+};
 
-const isArray = (schema: Schema): boolean => hasProps(schema, [
-  'items',
-  'additionalItems',
-  'maxItems',
-  'minItems',
-  'uniqueItems',
-]);
+const isArray = (schema: Schema): boolean => {
+  return hasProps(schema, ['items', 'additionalItems', 'maxItems', 'minItems', 'uniqueItems']);
+};
 
 export class FlowSchema {
   $id: string;
@@ -39,8 +41,11 @@ export class FlowSchema {
   $intersection: ?Array<FlowSchema>;
   $definitions: { [key: string]: FlowSchema };
 
-  static omitUndefined = (arr: Array<any>): Array<any> =>
-    _.filter(arr, (item: any): any => !_.isUndefined(item));
+  static omitUndefined = (arr: Array<any>): Array<any> => {
+    return _.filter(arr, (item: any): any => {
+      return !_.isUndefined(item);
+    });
+  };
 
   constructor(flowSchema: Object) {
     this.$id = flowSchema.$id;
@@ -57,7 +62,7 @@ export class FlowSchema {
     this.$required = flowSchema.$required;
   }
 
-  $set(key: string, value: any) {
+  $set(key: string, value: any): FlowSchema {
     return new FlowSchema({
       ...this,
       [key]: value,
@@ -84,8 +89,7 @@ export class FlowSchema {
   }
 
   props(properties: { [key: any]: FlowSchema }, required: ?Array<any>): FlowSchema {
-    return this
-      .flowType('Object')
+    return this.flowType('Object')
       .$set('$properties', properties)
       .$set('$required', required || []);
   }
@@ -114,8 +118,9 @@ export class FlowSchema {
   }
 }
 
-export const flow = (flowType: ?FlowType): FlowSchema =>
-  (new FlowSchema({})).flowType(flowType || 'any');
+export const flow = (flowType: ?FlowType): FlowSchema => {
+  return new FlowSchema({}).flowType(flowType || 'any');
+};
 
 export const convertSchema = (schema: Schema): FlowSchema => {
   if (schema.$ref) {
@@ -125,32 +130,29 @@ export const convertSchema = (schema: Schema): FlowSchema => {
   if (schema.allOf) {
     const patchedSchema = _.reduce(
       schema.allOf,
-      (prev: Schema, item: Schema) => _.assign(prev, item),
+      (prev: Schema, item: Schema): Object => {
+        return _.assign(prev, item);
+      },
       _.omit(schema, ['allOf', '$ref']),
     );
 
     return convertSchema(patchedSchema);
   }
 
-  const f = flow()
-    .id(schema.id)
-    .enum(schema.enum)
-    .definitions(
-      _.mapValues(
-        schema.definitions,
-        (definition: Schema, id: any) => convertSchema(_.assign(_.omit(definition, '$ref'), { id })),
-      ),
-    );
+  const f = flow().id(schema.id).enum(schema.enum).definitions(
+    _.mapValues(schema.definitions, (definition: Schema, id: any): any => {
+      return convertSchema(_.assign(_.omit(definition, '$ref'), { id }));
+    }),
+  );
 
   if (_.isArray(schema.type)) {
     return f.union(
-      _.map(
-        [].concat(schema.type || []),
-        (type: SimpleTypes) => convertSchema({
+      _.map([].concat(schema.type || []), (type: SimpleTypes): any => {
+        return convertSchema({
           ...schema,
           type,
-        }),
-      ),
+        });
+      }),
     );
   }
 
@@ -167,18 +169,22 @@ export const convertSchema = (schema: Schema): FlowSchema => {
   }
 
   if (isObject(schema)) {
-    return f.flowType('Object')
+    return f
+      .flowType('Object')
       .props(_.mapValues(schema.properties, convertSchema), schema.required)
       .union([
-        ...(_.map(schema.patternProperties, convertSchema)),
-        (typeof schema.additionalProperties === 'object') ? convertSchema(schema.additionalProperties) : undefined,
-        (typeof schema.additionalProperties === 'boolean' && schema.additionalProperties) ? convertSchema({}) : undefined,
+        ..._.map(schema.patternProperties, convertSchema),
+        typeof schema.additionalProperties === 'object'
+          ? convertSchema(schema.additionalProperties)
+          : undefined,
+        typeof schema.additionalProperties === 'boolean' && schema.additionalProperties
+          ? convertSchema({})
+          : undefined,
       ]);
   }
 
   if (isArray(schema)) {
-    return f.flowType('Array')
-      .union(_.map([].concat(schema.items || {}), convertSchema));
+    return f.flowType('Array').union(_.map([].concat(schema.items || {}), convertSchema));
   }
 
   switch (_.toLower(String(schema.type))) {

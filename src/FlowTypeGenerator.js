@@ -7,25 +7,27 @@ import {
   FlowSchema,
 } from './FlowSchema';
 
-type SchemaProcessor = (flowSchema: FlowSchema) => Object;
+type SchemaProcessorType = (flowSchema: FlowSchema) => Object;
 
-export const upperCamelCase = (str: string): string => _.upperFirst(_.camelCase(str));
+export const upperCamelCase = (str: string): string => { return _.upperFirst(_.camelCase(str)); };
 
-const optional = (astNode) =>
-  _.assign(astNode, { optional: true });
+const optional = (astNode: any): Object =>  {
+  return _.assign(astNode, { optional: true });
+};
 
-const processArraySchema = (flowSchema: FlowSchema, processor: SchemaProcessor): Object =>
-  t.genericTypeAnnotation(
+const processArraySchema = (flowSchema: FlowSchema, processor: SchemaProcessorType): Object =>  {
+  return t.genericTypeAnnotation(
     t.identifier('Array'),
     t.typeParameterInstantiation([
       processor(flowSchema.flowType('any')),
     ]),
   );
+};
 
-const processObjectSchema = (flowSchema: FlowSchema, processor: SchemaProcessor): Object => {
+const processObjectSchema = (flowSchema: FlowSchema, processor: SchemaProcessorType): Object => {
   const properties = _.map(
     flowSchema.$properties || {},
-    (fieldFlowSchema: FlowSchema, field: string) => {
+    (fieldFlowSchema: FlowSchema, field: string): any => {
       const ast = t.objectTypeProperty(
         t.identifier(field),
         processor(fieldFlowSchema),
@@ -60,7 +62,7 @@ export const toFlowType = (flowSchema: FlowSchema): Object => {
     return t.createUnionTypeAnnotation(
       _.map(
         flowSchema.$enum,
-        (value) => t.identifier(JSON.stringify(value)),
+        (value: any): any => { return t.identifier(JSON.stringify(value)); },
       ),
     );
   }

@@ -1,7 +1,7 @@
 // @flow
 
 import * as t from 'babel-types';
-import generate from 'babel-generator';
+import generate from 'babel-generator'; // eslint-disable-line import/no-extraneous-dependencies
 import _ from 'lodash';
 
 import type {
@@ -28,8 +28,8 @@ export {
   toFlowType,
 };
 
-export const toFlow = (flowSchema: FlowSchema): Object =>
-  t.exportNamedDeclaration(
+export const toFlow = (flowSchema: FlowSchema): Object =>  {
+  return t.exportNamedDeclaration(
     t.typeAlias(
       t.identifier(upperCamelCase(flowSchema.$id)),
       null,
@@ -37,20 +37,22 @@ export const toFlow = (flowSchema: FlowSchema): Object =>
     ),
     [],
   );
+};
 
-export const schemaToFlow = (flowSchema: FlowSchema): string =>
-  _.map(
+export const schemaToFlow = (flowSchema: FlowSchema): string =>  {
+  return _.map(
     [
       ...(_.map(flowSchema.$definitions, toFlow)),
       toFlow(flowSchema),
     ],
-    (ast: Object): string => generate(ast).code,
+    (ast: Object): string => { return generate(ast).code; },
   ).join('\n\n');
+};
 
-export const parseSchema = (schema: Schema, imports: ?{ [key: string]: Schema }): string =>
-  _.flow(
-    (s: Schema) => simplifySchema(s, imports),
+export const parseSchema = (schema: Schema, imports: ?{ [key: string]: Schema }): string =>  {
+  return _.flow(
+    (s: Schema): Schema => { return simplifySchema(s, imports); },
     convertSchema,
     schemaToFlow,
   )(schema);
-
+};

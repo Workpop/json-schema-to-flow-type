@@ -9,11 +9,13 @@ import {
   parseSchema,
 } from '../index';
 
-const stringify = (str: string): string => `// @flow
+const stringify = (str: string): string => {
+  return `// @flow
 /* eslint-disable */
 
 ${str}
 `;
+};
 
 test('convert schema json', () => {
   const result = parseSchema({

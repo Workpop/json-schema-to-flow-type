@@ -1,6 +1,6 @@
 {
   "name": "@workpop/json-schema-to-flow-type",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "ava": {
     "files": [
       "**/__tests__/*.spec.js"
